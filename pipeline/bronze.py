@@ -18,7 +18,7 @@ folders = [
     ("lineasproc", ","),
     ("consorcios", ","),
     ("adjudicaciones", ","),
-    ("productobs", ","),
+    ("productobs", ";"),
     ("funcionarioRol", ","),
     ("identificacionbs", ","),
     ("aclaraciones", ","),
