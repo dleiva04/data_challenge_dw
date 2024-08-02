@@ -11,34 +11,48 @@ schema=dbutils.widgets.get("schema")
 # COMMAND ----------
 
 # Reading data from the lineasofertadas table in the development catalog
-lineas_ofertadas_df= spark.read.table(f"{catalog}.{schema}.lineasofertadas")\
+lineas_ofertadas_df= spark.read.table("dw_dev.bronze.lineasofertadas")\
     .withColumn("nro_sicop", col("nro_sicop").cast("string")) \
     .withColumn("nro_linea", col("nro_linea").cast("string")) \
     .withColumn("codigo_producto", col("codigo_producto").cast("string"))
 
 # COMMAND ----------
 
-ofertas_df= spark.read.table(f"{catalog}.{schema}.ofertas").distinct()
+ofertas_df= spark.read.table("dw_dev.bronze.ofertas").distinct()
 
 # COMMAND ----------
 
 # Load the tables
-proveedores_df = spark.table(f"{catalog}.{schema}.proveedores").withColumn("cedula_proveedor", col("cedula_proveedor").cast("string"))
+proveedores_df = spark.table("dw_dev.bronze.proveedores").withColumn("cedula_proveedor", col("cedula_proveedor").cast("string"))
 
 # COMMAND ----------
 
-representantes_df = spark.table(f"{catalog}.{schema}.representantes")\
+representantes_df = spark.table("dw_dev.bronze.representantes")\
     .withColumn("cedula_representante", col("cedula_representante").cast("string"))\
     .withColumn("cedula_proveedor", col("cedula_proveedor").cast("string"))
 
 # COMMAND ----------
 
 # Group by the relevant columns and collect the rest as JSON
-representantes_df = representantes_df.groupBy("cedula_proveedor") \
-    .agg(collect_list(struct("cedula_representante", "nombre_representante","tipo_representante","fecha_inscripcion","fecha_fin_presentacion")).alias("lista_de_representantes"))
+representantes_df = representantes_df.groupBy("cedula_proveedor").agg(
+    collect_list(
+        struct(
+            "cedula_representante", 
+            "nombre_representante",
+            "tipo_representante",
+            "fecha_inscripcion",
+            "fecha_fin_presentacion"
+        )
+    ).alias("lista_de_representantes")
+)
 
 # Convert the collected list to JSON format
-representantes_df = representantes_df.withColumn("lista_de_representantes", to_json("lista_de_representantes"))
+representantes_df = representantes_df.withColumn(
+    "lista_de_representantes", 
+    to_json("lista_de_representantes")
+)
+
+display(representantes_df)
 
 # COMMAND ----------
 
@@ -55,13 +69,15 @@ representantes_df = representantes_df.withColumn("lista_de_representantes", from
 
 # COMMAND ----------
 
+consorcios_df = spark.table("dw_dev.bronze.consorcios") \
+    .withColumn("nro_consorcio", col("nro_consorcio").cast("string")) \
+    .withColumn("cedula_proveedor", col("cedula_proveedor").cast("string"))
 
+display(consorcios_df)
 
 # COMMAND ----------
 
-consorcios_df= spark.table(f"{catalog}.{schema}.consorcios")\
-    .withColumn("nro_consorcio", col("nro_consorcio").cast("string"))\
-    .withColumn("cedula_proveedor", col("cedula_proveedor").cast("string"))
+display(consorcios_df)
 
 # COMMAND ----------
 
@@ -143,8 +159,4 @@ display(proceso_ofertas_df.limit(5))
 
 # COMMAND ----------
 
-proceso_ofertas_df.write.mode("overwrite").saveAsTable(f"{catalog}.silver.lineasofertadas")
-
-# COMMAND ----------
-
-
+proceso_ofertas_df.write.mode("overwrite").saveAsTable("dw_dev.silver.lineasofertadas")
