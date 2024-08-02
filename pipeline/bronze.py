@@ -52,3 +52,4 @@ for file in folders:
         q.awaitTermination()
     except Exception as e:
         print(e)
+        raise e
