@@ -39,6 +39,7 @@ for file in folders:
             .option("cloudFiles.format", "csv")
             .option("header", "true")
             .option("multiline", "true")
+            .option("escape", '"')
             .option("sep", file_delimiter)
             .option("cloudFiles.schemaLocation", f"{schema_volume}/schema_{name}")
             .option("cloudFiles.inferColumnTypes", "true")
