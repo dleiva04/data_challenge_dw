@@ -44,7 +44,8 @@ group by all;"""
 
 # COMMAND ----------
 
-spark.sql("""create or replace table {catalog}.{schema}.identificacion_den as
+spark.sql(
+    f"""create or replace table {catalog}.{schema}.identificacion_den as
 select 
     ibs.codigo_identificacion,
     ibs.nombre_identificacion,
@@ -69,12 +70,13 @@ on ibs.codigo_clasificacion = jbs.codigoClasificacion
 left join {catalog}.{schema}.productobs pbs
 on ibs.codigo_identificacion = pbs.codigo_identificacion
 group by all;
-          """)
+          """
+)
 
 # COMMAND ----------
 
 spark.sql(
-    """create or replace table {catalog}.silver.lineasproc as
+    f"""create or replace table {catalog}.silver_test.lineasproc as
 select 
     lp.nro_sicop,
     lp.numero_linea,
