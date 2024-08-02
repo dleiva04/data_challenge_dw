@@ -6,7 +6,7 @@ checkpoint_volume = f"/Volumes/{catalog}/{schema}/checkpoints"
 schema_volume = f"/Volumes/{catalog}/{schema}/schemas"
 location = "abfss://dw-landing@oneenvadls.dfs.core.windows.net"
 folders = [
-    # ("productobs", ";"),
+    ("productobs", ";"),
     ("instituciones", ","),
     ("clasificacionbs", ","),
     ("adjudicacionesproveedores", ","),
