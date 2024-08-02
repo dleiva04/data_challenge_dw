@@ -2,8 +2,8 @@
 catalog = dbutils.widgets.get("catalog")
 schema = dbutils.widgets.get("schema")
 
-checkpoint_volume = f"/Volumes/{catalog}/{schema}/checkpoints_test"
-schema_volume = f"/Volumes/{catalog}/{schema}/schemas_test"
+checkpoint_volume = f"/Volumes/{catalog}/{schema}/checkpoints"
+schema_volume = f"/Volumes/{catalog}/{schema}/schemas"
 location = "abfss://dw-landing@oneenvadls.dfs.core.windows.net"
 folders = [
     ("instituciones", ","),
