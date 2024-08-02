@@ -76,7 +76,7 @@ group by all;
 # COMMAND ----------
 
 spark.sql(
-    f"""create or replace table {catalog}.silver_test.lineasproc as
+    f"""create or replace table {catalog}.silver.lineasproc as
 select 
     cast(lp.nro_sicop as string),
     cast(lp.numero_linea as int),
