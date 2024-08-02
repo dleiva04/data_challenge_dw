@@ -8,7 +8,7 @@ resources:
             notebook_path: pipeline/bronze
             base_parameters:
               catalog: dw_dev
-              schema: bronze_test
+              schema: bronze
             source: GIT
         - task_key: silver_proceso
           depends_on:
@@ -17,7 +17,7 @@ resources:
             notebook_path: pipeline/silver_proceso
             base_parameters:
               catalog: dw_dev
-              schema: bronze_test
+              schema: bronze
             source: GIT
         - task_key: silver_cartel
           depends_on:
