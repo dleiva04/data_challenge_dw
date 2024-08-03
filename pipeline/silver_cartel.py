@@ -2,11 +2,7 @@
 from pyspark.sql.functions import col
 from pyspark.sql.functions import collect_list, to_json, struct,from_json
 from pyspark.sql.types import ArrayType, StructType, StructField, StringType, TimestampType
-
-# COMMAND ----------
-
-catalog=dbutils.widgets.get("catalog")
-schema=dbutils.widgets.get("schema")
+from pyspark.sql.functions import col, when
 
 # COMMAND ----------
 
@@ -19,6 +15,7 @@ lineas_ofertadas_df= spark.read.table("dw_dev.bronze.lineasofertadas")\
 # COMMAND ----------
 
 ofertas_df= spark.read.table("dw_dev.bronze.ofertas").distinct()
+
 
 # COMMAND ----------
 
@@ -34,25 +31,11 @@ representantes_df = spark.table("dw_dev.bronze.representantes")\
 # COMMAND ----------
 
 # Group by the relevant columns and collect the rest as JSON
-representantes_df = representantes_df.groupBy("cedula_proveedor").agg(
-    collect_list(
-        struct(
-            "cedula_representante", 
-            "nombre_representante",
-            "tipo_representante",
-            "fecha_inscripcion",
-            "fecha_fin_presentacion"
-        )
-    ).alias("lista_de_representantes")
-)
+representantes_df = representantes_df.groupBy("cedula_proveedor") \
+    .agg(collect_list(struct("cedula_representante", "nombre_representante","tipo_representante","fecha_inscripcion","fecha_fin_presentacion")).alias("lista_de_representantes"))
 
 # Convert the collected list to JSON format
-representantes_df = representantes_df.withColumn(
-    "lista_de_representantes", 
-    to_json("lista_de_representantes")
-)
-
-display(representantes_df)
+representantes_df = representantes_df.withColumn("lista_de_representantes", to_json("lista_de_representantes"))
 
 # COMMAND ----------
 
@@ -69,28 +52,24 @@ representantes_df = representantes_df.withColumn("lista_de_representantes", from
 
 # COMMAND ----------
 
-consorcios_df = spark.table("dw_dev.bronze.consorcios") \
-    .withColumn("nro_consorcio", col("nro_consorcio").cast("string")) \
+consorcios_df= spark.table("dw_dev.bronze.consorcios")\
+    .withColumn("nro_consorcio", col("nro_consorcio").cast("string"))\
     .withColumn("cedula_proveedor", col("cedula_proveedor").cast("string"))
 
-display(consorcios_df)
-
-# COMMAND ----------
-
-display(consorcios_df)
 
 # COMMAND ----------
 
 # Group by 'cedula_proveedor' and collect 'nro_consorcio' values into a list
-consorcios_proveedor_collapse_df = consorcios_df.groupBy("cedula_proveedor").agg(
-    collect_list("nro_consorcio").alias("lista_de_consorcios_del_proveedor")
-)
+consorcios_proveedor_collapse_df = consorcios_df.groupBy("cedula_proveedor") \
+    .agg(collect_list("nro_consorcio").alias("lista_de_consorcios_del_proveedor"))
 
 # Convert the collected list to JSON format
 consorcios_proveedor_collapse_df = consorcios_proveedor_collapse_df.withColumn(
-    "lista_de_consorcios_del_proveedor",
-    to_json(col("lista_de_consorcios_del_proveedor")),
+    "lista_de_consorcios_del_proveedor", 
+    to_json(col("lista_de_consorcios_del_proveedor"))
 )
+
+
 
 # COMMAND ----------
 
@@ -141,7 +120,39 @@ proceso_ofertas_df=proceso_ofertas_df.join(consorcios_proveedor_collapse_df,on="
 
 # COMMAND ----------
 
-display(proceso_ofertas_df.count())
+proceso_ofertas_df = proceso_ofertas_df.withColumn(
+    "estado",
+    when(col("estado") == "Presentada", True)
+    .when(col("estado") == "No Presentada", False)
+    .otherwise(None)
+    .cast("boolean")
+)
+
+# COMMAND ----------
+
+proceso_ofertas_df = proceso_ofertas_df.withColumn(
+    "elegible",
+    when(col("elegible") == "Sí", True)
+    .when(col("elegible") == "No", False)
+    .otherwise(None)
+    .cast("boolean")
+)
+
+# COMMAND ----------
+
+
+
+proceso_ofertas_df = proceso_ofertas_df.withColumn("nro_sicop", col("nro_sicop").cast("string"))
+
+
+# COMMAND ----------
+
+proceso_ofertas_df = proceso_ofertas_df.withColumn("cedula_proveedor", col("cedula_proveedor").cast("string"))
+
+
+# COMMAND ----------
+
+proceso_ofertas_df = proceso_ofertas_df.withColumn("nro_consorcio", col("nro_consorcio").cast("string"))
 
 # COMMAND ----------
 
@@ -154,9 +165,12 @@ display(proceso_ofertas_df.count())
 
 # COMMAND ----------
 
-# Display only 5 elements of the dataframe consorcios_ofertas_collapse_df
-display(proceso_ofertas_df.limit(5))
+display(proceso_ofertas_df)
 
 # COMMAND ----------
 
 proceso_ofertas_df.write.mode("overwrite").saveAsTable("dw_dev.silver.lineasofertadas")
+
+# COMMAND ----------
+
+
