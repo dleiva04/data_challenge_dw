@@ -79,8 +79,8 @@ spark.sql(
     f"""create or replace table {catalog}.silver.lineasproc as
 select 
     cast(lp.nro_sicop as string),
-    cast(lp.numero_linea as int),
-    cast(lp.numero_partida as int),
+    cast(lp.numero_linea as int) as nro_linea,
+    cast(lp.numero_partida as int) as nro_partida,
     cast(lp.cantidad_solicitada as int),
     cast(lp.precio_unitario_estimado as double),
     cast(lp.tipo_moneda as string),
