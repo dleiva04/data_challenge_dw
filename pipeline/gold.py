@@ -92,9 +92,7 @@
 # COMMAND ----------
 
 # MAGIC %sql 
-# MAGIC
-# MAGIC -- Lineas adjudicadas por categoria/familia del producto
-# MAGIC
+# MAGIC create or replace table dw_dev.gold.linea_adjudicadas_bi as
 # MAGIC SELECT
 # MAGIC lp.nro_sicop,
 # MAGIC lp.numero_linea,
