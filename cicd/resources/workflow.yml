@@ -1,0 +1,47 @@
+resources:
+  jobs:
+    data_challenge_workflow:
+      name: Workflow Data Wranglers
+      tasks:
+        # - task_key: bronze
+        #   notebook_task:
+        #     notebook_path: pipeline/bronze
+        #     base_parameters:
+        #       catalog: dw_dev
+        #       schema: bronze
+        #     source: GIT
+        - task_key: silver_proceso
+          # depends_on:
+          #   - task_key: bronze
+          notebook_task:
+            notebook_path: pipeline/silver_proceso
+            base_parameters:
+              catalog: dw_dev
+              schema: bronze
+            source: GIT
+        # - task_key: silver_cartel
+        #   depends_on:
+        #     - task_key: bronze
+        #   notebook_task:
+        #     notebook_path: pipeline/silver_cartel
+        #     source: GIT
+        # - task_key: silver_adjudicacion
+        #   depends_on:
+        #     - task_key: bronze
+        #   notebook_task:
+        #     notebook_path: pipeline/silver_adjudicacion
+        #     source: GIT
+        # - task_key: gold
+        #   depends_on:
+        #     - task_key: silver_proceso
+        #     - task_key: silver_cartel
+        #     - task_key: silver_adjudicacion
+        #   notebook_task:
+        #     notebook_path: pipeline/silver_adjudicacion
+        #     source: GIT
+      git_source:
+        git_url: https://github.com/dleiva04/data_challenge_dw.git
+        git_provider: gitHub
+        git_branch: ${bundle.target}
+      queue:
+        enabled: true

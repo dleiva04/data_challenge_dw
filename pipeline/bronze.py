@@ -6,6 +6,7 @@ checkpoint_volume = f"/Volumes/{catalog}/{schema}/checkpoints"
 schema_volume = f"/Volumes/{catalog}/{schema}/schemas"
 location = "abfss://dw-landing@oneenvadls.dfs.core.windows.net"
 folders = [
+    ("productobs", ";"),
     ("instituciones", ","),
     ("clasificacionbs", ","),
     ("adjudicacionesproveedores", ","),
@@ -18,7 +19,6 @@ folders = [
     ("lineasproc", ","),
     ("consorcios", ","),
     ("adjudicaciones", ","),
-    ("productobs", ","),
     ("funcionarioRol", ","),
     ("identificacionbs", ","),
     ("aclaraciones", ","),
@@ -39,6 +39,7 @@ for file in folders:
             .option("cloudFiles.format", "csv")
             .option("header", "true")
             .option("multiline", "true")
+            .option("escape", '"')
             .option("sep", file_delimiter)
             .option("cloudFiles.schemaLocation", f"{schema_volume}/schema_{name}")
             .option("cloudFiles.inferColumnTypes", "true")
@@ -52,3 +53,4 @@ for file in folders:
         q.awaitTermination()
     except Exception as e:
         print(e)
+        raise e
