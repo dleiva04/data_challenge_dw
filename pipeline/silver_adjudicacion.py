@@ -1,6 +1,7 @@
 # Databricks notebook source
-spark.sql("""
-CREATE OR REPLACE TABLE dw_dev.silver.lineas_adjudicadas AS
+spark.sql(
+    """
+CREATE OR REPLACE TABLE demo_datachallenge.silver.lineas_adjudicadas AS
 SELECT 
     cast(a.nro_sicop as string),
     cast(a.nro_acto as string),
@@ -32,12 +33,13 @@ SELECT
     cast(LA.tipo_cambio_crc as double),
     cast(LA.tipo_cambio_dolar as double),
     cast(pbs.codigo_producto as string)
-FROM dw_dev.bronze.lineasadjudicadas LA 
-LEFT JOIN dw_dev.bronze.adjudicaciones a
+FROM demo_datachallenge.bronze.lineasadjudicadas LA 
+LEFT JOIN demo_datachallenge.bronze.adjudicaciones a
     ON A.nro_sicop = LA.nro_sicop AND A.nro_acto = LA.nro_acto
-LEFT JOIN dw_dev.bronze.adjudicacionesproveedores ap
+LEFT JOIN demo_datachallenge.bronze.adjudicacionesproveedores ap
     ON LA.nro_acto = ap.nro_acto
-LEFT JOIN dw_dev.bronze.productobs pbs
+LEFT JOIN demo_datachallenge.bronze.productobs pbs
     ON LA.codigo_producto = pbs.codigo_producto
 GROUP BY all
-          """)
+          """
+)

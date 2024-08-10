@@ -1,29 +1,29 @@
 # Databricks notebook source
 # MAGIC %sql
-# MAGIC create or replace table dw_dev.gold.proceso_contratacion as
-# MAGIC select 
+# MAGIC create or replace table demo_datachallenge.gold.proceso_contratacion as
+# MAGIC select
 # MAGIC     lplo.nro_sicop,
 # MAGIC     lplo.nro_linea,
 # MAGIC     lplo.ofertas,
 # MAGIC     lpla.adjudicadas
 # MAGIC from (
-# MAGIC     select 
+# MAGIC     select
 # MAGIC         lp.nro_sicop,
 # MAGIC         lo.nro_linea,
 # MAGIC         array_agg(lo.nro_oferta) as ofertas
-# MAGIC     from dw_dev.silver.lineasproc lp
-# MAGIC     left join dw_dev.silver.lineasofertadas lo
+# MAGIC     from demo_datachallenge.silver.lineasproc lp
+# MAGIC     left join demo_datachallenge.silver.lineasofertadas lo
 # MAGIC     on lp.nro_sicop = lo.nro_sicop
 # MAGIC     and lp.numero_linea = lo.nro_linea
 # MAGIC     group by lp.nro_sicop, lo.nro_linea
-# MAGIC ) lplo 
+# MAGIC ) lplo
 # MAGIC left join (
-# MAGIC     select 
+# MAGIC     select
 # MAGIC         lp.nro_sicop,
 # MAGIC         la.nro_linea,
 # MAGIC         array_agg(la.nro_oferta) as adjudicadas
-# MAGIC     from dw_dev.silver.lineasproc lp
-# MAGIC     left join dw_dev.silver.lineas_adjudicadas la
+# MAGIC     from demo_datachallenge.silver.lineasproc lp
+# MAGIC     left join demo_datachallenge.silver.lineas_adjudicadas la
 # MAGIC     on lp.nro_sicop = la.nro_sicop
 # MAGIC     and lp.numero_linea = la.nro_linea
 # MAGIC     group by lp.nro_sicop, la.nro_linea
@@ -35,7 +35,7 @@
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC create or replace table dw_dev.gold.sumatorias as
+# MAGIC create or replace table demo_datachallenge.gold.sumatorias as
 # MAGIC select * from (
 # MAGIC select
 # MAGIC     "adjudicacion" as tipo,
@@ -44,12 +44,12 @@
 # MAGIC     nro_oferta,
 # MAGIC     tipo_moneda,
 # MAGIC     if(
-# MAGIC         tipo_moneda='CRC', 
+# MAGIC         tipo_moneda='CRC',
 # MAGIC         (precio_unitario_adjudicado * cantidad_adjudicada - descuento + iva + otros_impuestos + acarreos)/tipo_cambio_dolar,
 # MAGIC         precio_unitario_adjudicado * cantidad_adjudicada - descuento + iva + otros_impuestos + acarreos
 # MAGIC     ) as total_dolar,
 # MAGIC     if(
-# MAGIC         tipo_moneda='USD', 
+# MAGIC         tipo_moneda='USD',
 # MAGIC         (precio_unitario_adjudicado * cantidad_adjudicada - descuento + iva + otros_impuestos + acarreos)*tipo_cambio_crc,
 # MAGIC         precio_unitario_adjudicado * cantidad_adjudicada - descuento + iva + otros_impuestos + acarreos
 # MAGIC     ) as total_crc,
@@ -59,7 +59,7 @@
 # MAGIC     iva,
 # MAGIC     otros_impuestos,
 # MAGIC     acarreos
-# MAGIC from dw_dev.silver.lineas_adjudicadas
+# MAGIC from demo_datachallenge.silver.lineas_adjudicadas
 # MAGIC union all
 # MAGIC select
 # MAGIC     "oferta" as tipo,
@@ -68,12 +68,12 @@
 # MAGIC     nro_oferta,
 # MAGIC     tipo_moneda,
 # MAGIC     if(
-# MAGIC         tipo_moneda='CRC', 
+# MAGIC         tipo_moneda='CRC',
 # MAGIC         (precio_unitario_ofertado * cantidad_ofertada - descuento + iva + otros_impuestos + acarreos)/tipo_cambio_dolar,
 # MAGIC         precio_unitario_ofertado * cantidad_ofertada - descuento + iva + otros_impuestos + acarreos
 # MAGIC     ) as total_dolar,
 # MAGIC     if(
-# MAGIC         tipo_moneda='USD', 
+# MAGIC         tipo_moneda='USD',
 # MAGIC         (precio_unitario_ofertado * cantidad_ofertada - descuento + iva + otros_impuestos + acarreos)*tipo_cambio_crc,
 # MAGIC         precio_unitario_ofertado * cantidad_ofertada - descuento + iva + otros_impuestos + acarreos
 # MAGIC     ) as total_crc,
@@ -83,7 +83,7 @@
 # MAGIC     iva,
 # MAGIC     otros_impuestos,
 # MAGIC     acarreos
-# MAGIC from dw_dev.silver.lineasofertadas
+# MAGIC from demo_datachallenge.silver.lineasofertadas
 # MAGIC );
 # MAGIC
 # MAGIC
@@ -91,8 +91,8 @@
 
 # COMMAND ----------
 
-# MAGIC %sql 
-# MAGIC create or replace table dw_dev.gold.linea_adjudicadas_bi as
+# MAGIC %sql
+# MAGIC create or replace table demo_datachallenge.gold.linea_adjudicadas_bi as
 # MAGIC SELECT
 # MAGIC lp.nro_sicop,
 # MAGIC lp.numero_linea,
@@ -129,10 +129,8 @@
 # MAGIC la.tipo_cambio_crc,
 # MAGIC la.tipo_cambio_dolar,
 # MAGIC la.codigo_producto
-# MAGIC FROM dw_dev.silver.lineasproc  lp
-# MAGIC INNER JOIN dw_dev.silver.lineas_adjudicadas AS la ON (lp.nro_sicop=la.nro_sicop) AND (lp.numero_linea=la.nro_linea)
+# MAGIC FROM demo_datachallenge.silver.lineasproc  lp
+# MAGIC INNER JOIN demo_datachallenge.silver.lineas_adjudicadas AS la ON (lp.nro_sicop=la.nro_sicop) AND (lp.numero_linea=la.nro_linea)
 # MAGIC
 
 # COMMAND ----------
-
-

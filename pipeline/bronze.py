@@ -4,7 +4,7 @@ schema = dbutils.widgets.get("schema")
 
 checkpoint_volume = f"/Volumes/{catalog}/{schema}/checkpoints"
 schema_volume = f"/Volumes/{catalog}/{schema}/schemas"
-location = "abfss://raw@datachallengebucket.dfs.core.windows.net"
+location = "s3://databricks-workspace-stack-36538-bucket/raw"
 folders = [
     ("productobs", ";"),
     ("instituciones", ","),
